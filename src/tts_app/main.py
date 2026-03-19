@@ -1,3 +1,8 @@
+"""Azure TTS CLI エントリポイント。
+
+コマンドライン引数を解析し、テキストを音声合成する。
+"""
+
 import argparse
 import sys
 
@@ -11,6 +16,12 @@ _DEFAULT_VOICE = {lang: voices[0]["id"] for lang, voices in VOICES.items()}
 
 
 def main() -> None:
+    """CLI のメインエントリポイント。
+
+    コマンドライン引数を解析し、指定されたテキストを音声合成する。
+    テキストが省略された場合は標準入力から対話的に受け取る。
+    エラー発生時は非ゼロの終了コードで終了する。
+    """
     parser = argparse.ArgumentParser(description="Azure TTS CLI")
     parser.add_argument(
         "-l", "--language",

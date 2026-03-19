@@ -1,3 +1,8 @@
+"""Azure AI Speech を使ったテキスト読み上げ（TTS）モジュール。
+
+利用可能なボイス一覧と音声合成関数を提供する。
+"""
+
 import os
 
 import azure.cognitiveservices.speech as speechsdk
@@ -11,8 +16,8 @@ VOICES: dict[str, list[dict[str, str]]] = {
         {"id": "ja-JP-MayuNeural", "label": "Mayu（女性）"},
         {"id": "ja-JP-ShioriNeural", "label": "Shiori（女性）"},
         {"id": "ja-JP-NaokiNeural", "label": "Naoki（男性）"},
-        {"id": "ja-JP-Nanami:DragonHDLatestNeural", "label": "Nanami HD（女性・高品質）"},
-        {"id": "ja-JP-Masaru:DragonHDLatestNeural", "label": "Masaru HD（男性・高品質）"},
+        {"id": "ja-JP-Nanami:DragonHDLatestNeural", "label": "Nanami HD（女性・高品質）"},  # noqa: E501
+        {"id": "ja-JP-Masaru:DragonHDLatestNeural", "label": "Masaru HD（男性・高品質）"},  # noqa: E501
     ],
     "en": [
         {"id": "en-US-JennyNeural", "label": "Jenny（女性）"},
@@ -24,12 +29,31 @@ VOICES: dict[str, list[dict[str, str]]] = {
         {"id": "en-US-SaraNeural", "label": "Sara（女性）"},
         {"id": "en-US-TonyNeural", "label": "Tony（男性）"},
         {"id": "en-US-Ava:DragonHDLatestNeural", "label": "Ava HD（女性・高品質）"},
-        {"id": "en-US-Andrew:DragonHDLatestNeural", "label": "Andrew HD（男性・高品質）"},
+        {"id": "en-US-Andrew:DragonHDLatestNeural", "label": "Andrew HD（男性・高品質）"},  # noqa: E501
     ],
 }
 
 
 def synthesize(text: str, voice: str, output_path: str | None = None) -> bytes:
+    """テキストを音声に変換し、WAV バイト列を返す。
+
+    Azure AI Speech を使って指定ボイスでテキストを読み上げ合成する。
+    音声データはメモリ上に取得するため一時ファイルは使用しない。
+
+    Args:
+        text: 読み上げるテキスト。
+        voice: 使用するボイスの ID（例: ``ja-JP-NanamiNeural``）。
+        output_path: WAV ファイルの保存先パス。指定した場合はファイルにも保存する。
+            ``None`` の場合は保存しない。
+
+    Returns:
+        合成した音声データの WAV バイト列。
+
+    Raises:
+        KeyError: 環境変数 ``AZURE_SPEECH_KEY`` または ``AZURE_SPEECH_REGION``
+            が設定されていない場合。
+        RuntimeError: Azure Speech サービスが音声合成をキャンセルした場合。
+    """
     speech_key = os.environ["AZURE_SPEECH_KEY"]
     speech_region = os.environ["AZURE_SPEECH_REGION"]
 

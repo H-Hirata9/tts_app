@@ -1,3 +1,8 @@
+"""Streamlit による Azure TTS Web UI モジュール。
+
+言語・ボイスの選択、テキスト入力、音声合成・再生・保存機能を提供する。
+"""
+
 from pathlib import Path
 
 import streamlit as st

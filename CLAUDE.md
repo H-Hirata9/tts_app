@@ -16,6 +16,7 @@
 ## Code Style
 - PEP8
 - check with ruff
+- Docstring: Google スタイル（すべての public 関数・モジュールに記述）
 
 ## VCS
 - Git / GitHub
