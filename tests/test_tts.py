@@ -97,6 +97,13 @@ class TestSynthesize:
 
         assert list(tmp_path.iterdir()) == []
 
+    def test_raises_value_error_on_long_text(self, monkeypatch):
+        monkeypatch.setenv("AZURE_SPEECH_KEY", "dummy_key")
+        monkeypatch.setenv("AZURE_SPEECH_REGION", "eastus")
+
+        with pytest.raises(ValueError, match="テキストが長すぎます"):
+            synthesize("あ" * 10_001, "ja-JP-NanamiNeural")
+
     def test_raises_key_error_without_env(self, monkeypatch):
         monkeypatch.delenv("AZURE_SPEECH_KEY", raising=False)
         monkeypatch.delenv("AZURE_SPEECH_REGION", raising=False)

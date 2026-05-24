@@ -54,6 +54,8 @@ if st.button("🎙️ 音声合成", type="primary", use_container_width=True):
                 st.audio(audio_bytes, format="audio/wav")
                 if save_path:
                     st.success(f"保存しました: {save_path}")
+            except ValueError as e:
+                st.error(f"エラー: {e}")
             except KeyError as e:
                 st.error(f"環境変数が設定されていません: {e}")
             except RuntimeError as e:

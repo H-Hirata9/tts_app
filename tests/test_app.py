@@ -68,6 +68,17 @@ class TestErrorHandling:
         at.button[0].click().run()
         assert any("環境変数が設定されていません" in e.value for e in at.error)
 
+    def test_value_error_shows_error_message(self, mocker):
+        mocker.patch(
+            "tts_app.tts.synthesize",
+            side_effect=ValueError("テキストが長すぎます (10001 文字)"),
+        )
+        at = AppTest.from_file(_APP_FILE)
+        at.run()
+        at.text_area[0].input("テスト")
+        at.button[0].click().run()
+        assert any("テキストが長すぎます" in e.value for e in at.error)
+
     def test_runtime_error_shows_error_message(self, mocker):
         mocker.patch(
             "tts_app.tts.synthesize",

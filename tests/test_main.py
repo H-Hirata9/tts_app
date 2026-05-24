@@ -194,6 +194,17 @@ class TestInputFile:
 class TestMainErrorHandling:
     """エラーハンドリングのテスト。"""
 
+    def test_value_error_exits_with_1(self, mocker, monkeypatch):
+        monkeypatch.setattr(sys, "argv", ["tts", "テスト"])
+        mocker.patch(
+            "tts_app.main.synthesize", side_effect=ValueError("テキストが長すぎます")
+        )
+
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+
+        assert exc_info.value.code == 1
+
     def test_key_error_exits_with_1(self, mocker, monkeypatch):
         monkeypatch.setattr(sys, "argv", ["tts", "テスト"])
         mocker.patch(

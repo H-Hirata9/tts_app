@@ -7,6 +7,8 @@ import os
 
 import azure.cognitiveservices.speech as speechsdk
 
+_MAX_CHARS = 10_000
+
 VOICES: dict[str, list[dict[str, str]]] = {
     "ja": [
         {"id": "ja-JP-NanamiNeural", "label": "Nanami（女性）"},
@@ -50,10 +52,17 @@ def synthesize(text: str, voice: str, output_path: str | None = None) -> bytes:
         合成した音声データの WAV バイト列。
 
     Raises:
+        ValueError: テキストが ``_MAX_CHARS`` 文字を超える場合。
         KeyError: 環境変数 ``AZURE_SPEECH_KEY`` または ``AZURE_SPEECH_REGION``
             が設定されていない場合。
         RuntimeError: Azure Speech サービスが音声合成をキャンセルした場合。
     """
+    if len(text) > _MAX_CHARS:
+        raise ValueError(
+            f"テキストが長すぎます ({len(text)} 文字)。"
+            f"上限は {_MAX_CHARS} 文字です。"
+        )
+
     speech_key = os.environ["AZURE_SPEECH_KEY"]
     speech_region = os.environ["AZURE_SPEECH_REGION"]
 

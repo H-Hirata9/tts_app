@@ -64,6 +64,9 @@ def _process_file(input_file: str, voice: str, output_dir: str) -> None:
         try:
             synthesize(line, voice, str(output_path))
             print(f"[{i}/{len(lines)}] {filename}: {line[:50]}")
+        except ValueError as e:
+            print(f"エラー: {e}", file=sys.stderr)
+            sys.exit(1)
         except KeyError as e:
             print(f"環境変数が設定されていません: {e}", file=sys.stderr)
             sys.exit(1)
@@ -132,6 +135,9 @@ def main() -> None:
 
     try:
         synthesize(text, voice, args.output)
+    except ValueError as e:
+        print(f"エラー: {e}", file=sys.stderr)
+        sys.exit(1)
     except KeyError as e:
         print(f"環境変数が設定されていません: {e}", file=sys.stderr)
         sys.exit(1)
