@@ -9,7 +9,7 @@ Streamlit による Web UI と CLI の両方に対応しています。
 - 各言語で複数のボイスを選択可能（DragonHD 高品質ボイス含む）
 - ブラウザ上でそのまま再生
 - WAV ファイルへの保存オプション
-- CLI でのバッチ利用にも対応
+- CLI でのバッチ利用にも対応（テキストファイルから1行1ファイルで連続生成）
 
 ## Requirements
 
@@ -74,6 +74,30 @@ tts --language ja --output output/hello.wav "こんにちは"
 
 # インタラクティブ入力
 tts --language ja
+
+# 利用可能なボイス一覧を表示する
+tts --language ja --list-voices
+tts --language en --list-voices
+
+# テキストファイルから1行ずつ音声ファイルを生成する
+tts --language ja --input-file script.txt --output output/batch/
+```
+
+#### `--input-file` の動作
+
+- テキストファイルの各行を1つの WAV ファイルに変換する
+- 空行はスキップされる
+- 出力ファイル名は連番（例: `01.wav`, `02.wav`, ...）
+- `--output` でディレクトリを指定する（省略時は `output/` に保存）
+- `--voice` でボイスを指定できる（省略時は言語のデフォルトボイス）
+
+```
+# script.txt の内容
+こんにちは。
+今日はいい天気ですね。
+ありがとうございました。
+
+# 出力: output/batch/1.wav, 2.wav, 3.wav
 ```
 
 ## Project Structure
