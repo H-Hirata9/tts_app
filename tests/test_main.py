@@ -77,6 +77,112 @@ class TestMainInteractiveInput:
         assert exc_info.value.code == 1
 
 
+class TestListVoices:
+    """--list-voices フラグのテスト。"""
+
+    def test_prints_voice_ids(self, monkeypatch, capsys):
+        monkeypatch.setattr(sys, "argv", ["tts", "--list-voices"])
+
+        main()
+
+        out = capsys.readouterr().out
+        assert "ja-JP-NanamiNeural" in out
+
+    def test_list_en_voices(self, monkeypatch, capsys):
+        monkeypatch.setattr(sys, "argv", ["tts", "--language", "en", "--list-voices"])
+
+        main()
+
+        out = capsys.readouterr().out
+        assert "en-US-" in out
+        assert "ja-JP-" not in out
+
+    def test_does_not_call_synthesize(self, mocker, monkeypatch):
+        monkeypatch.setattr(sys, "argv", ["tts", "--list-voices"])
+        mock_syn = mocker.patch("tts_app.main.synthesize")
+
+        main()
+
+        mock_syn.assert_not_called()
+
+
+class TestInputFile:
+    """--input-file フラグのテスト。"""
+
+    def test_creates_wav_per_line(self, mock_synthesize, monkeypatch, tmp_path):
+        input_file = tmp_path / "input.txt"
+        input_file.write_text("line1\nline2\nline3\n", encoding="utf-8")
+        out_dir = tmp_path / "out"
+        monkeypatch.setattr(
+            sys, "argv", ["tts", "--input-file", str(input_file), "--output", str(out_dir)]
+        )
+
+        main()
+
+        assert mock_synthesize.call_count == 3
+
+    def test_output_filenames_are_sequential(self, mock_synthesize, monkeypatch, tmp_path):
+        input_file = tmp_path / "input.txt"
+        input_file.write_text("first\nsecond\n", encoding="utf-8")
+        out_dir = tmp_path / "out"
+        monkeypatch.setattr(
+            sys, "argv", ["tts", "--input-file", str(input_file), "--output", str(out_dir)]
+        )
+
+        main()
+
+        paths = [call.args[2] for call in mock_synthesize.call_args_list]
+        assert paths[0].endswith("1.wav")
+        assert paths[1].endswith("2.wav")
+
+    def test_skips_empty_lines(self, mock_synthesize, monkeypatch, tmp_path):
+        input_file = tmp_path / "input.txt"
+        input_file.write_text("line1\n\nline2\n\n", encoding="utf-8")
+        out_dir = tmp_path / "out"
+        monkeypatch.setattr(
+            sys, "argv", ["tts", "--input-file", str(input_file), "--output", str(out_dir)]
+        )
+
+        main()
+
+        assert mock_synthesize.call_count == 2
+
+    def test_file_not_found_exits_with_1(self, monkeypatch):
+        monkeypatch.setattr(
+            sys, "argv", ["tts", "--input-file", "nonexistent.txt"]
+        )
+
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+
+        assert exc_info.value.code == 1
+
+    def test_empty_file_exits_with_1(self, monkeypatch, tmp_path):
+        input_file = tmp_path / "empty.txt"
+        input_file.write_text("", encoding="utf-8")
+        monkeypatch.setattr(
+            sys, "argv", ["tts", "--input-file", str(input_file)]
+        )
+
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+
+        assert exc_info.value.code == 1
+
+    def test_default_output_dir_is_output(self, mock_synthesize, monkeypatch, tmp_path):
+        input_file = tmp_path / "input.txt"
+        input_file.write_text("hello\n", encoding="utf-8")
+        monkeypatch.setattr(
+            sys, "argv", ["tts", "--input-file", str(input_file)]
+        )
+        monkeypatch.chdir(tmp_path)
+
+        main()
+
+        paths = [call.args[2] for call in mock_synthesize.call_args_list]
+        assert "output" in paths[0]
+
+
 class TestMainErrorHandling:
     """エラーハンドリングのテスト。"""
 
