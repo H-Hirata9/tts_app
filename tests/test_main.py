@@ -114,19 +114,25 @@ class TestInputFile:
         input_file.write_text("line1\nline2\nline3\n", encoding="utf-8")
         out_dir = tmp_path / "out"
         monkeypatch.setattr(
-            sys, "argv", ["tts", "--input-file", str(input_file), "--output", str(out_dir)]
+            sys,
+            "argv",
+            ["tts", "--input-file", str(input_file), "--output", str(out_dir)],
         )
 
         main()
 
         assert mock_synthesize.call_count == 3
 
-    def test_output_filenames_are_sequential(self, mock_synthesize, monkeypatch, tmp_path):
+    def test_output_filenames_are_sequential(
+        self, mock_synthesize, monkeypatch, tmp_path
+    ):
         input_file = tmp_path / "input.txt"
         input_file.write_text("first\nsecond\n", encoding="utf-8")
         out_dir = tmp_path / "out"
         monkeypatch.setattr(
-            sys, "argv", ["tts", "--input-file", str(input_file), "--output", str(out_dir)]
+            sys,
+            "argv",
+            ["tts", "--input-file", str(input_file), "--output", str(out_dir)],
         )
 
         main()
@@ -140,7 +146,9 @@ class TestInputFile:
         input_file.write_text("line1\n\nline2\n\n", encoding="utf-8")
         out_dir = tmp_path / "out"
         monkeypatch.setattr(
-            sys, "argv", ["tts", "--input-file", str(input_file), "--output", str(out_dir)]
+            sys,
+            "argv",
+            ["tts", "--input-file", str(input_file), "--output", str(out_dir)],
         )
 
         main()

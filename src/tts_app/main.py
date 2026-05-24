@@ -94,7 +94,7 @@ def main() -> None:
     parser.add_argument(
         "-o", "--output",
         metavar="PATH",
-        help="出力先パス。テキスト入力時はWAVファイル、--input-file 使用時はディレクトリ",
+        help="WAVファイルパス（--input-file 使用時はディレクトリ）",
     )
     parser.add_argument(
         "-f", "--input-file",
